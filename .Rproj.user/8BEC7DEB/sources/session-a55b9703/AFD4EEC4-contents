@@ -1,0 +1,35 @@
+---
+title: "final_project_version02"
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+```{r}
+library("tidyverse")
+library("ggplot2")
+```
+
+```{r}
+twitch <- read.csv("D:/rstudio/final_project_version02/twitch.csv")
+```
+
+```{r}
+head(twitch)
+```
+
+```{r}
+str(twitch)
+```
+
+```{r}
+G_twitch_streamers <- twitch |>
+  filter(`Mature` == "False")
+
+R18_twitch_streamers <- twitch |>
+  filter(`Mature` == "True")
+
+t.test(G_twitch_streamers$`Watch.time.Minutes.`, R18_twitch_streamers$`Watch.time.Minutes.`)
+```
+
