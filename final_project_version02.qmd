@@ -13,7 +13,7 @@ library(tidyverse)
 library(ggplot2)
 library(dplyr)
 library(viridis)
-library(RColorBrewer)
+library(plotly)
 ```
 
 ## Dataset
@@ -69,16 +69,29 @@ language_twitch <- twitch %>%
 language_twitch
 ```
 
+## Basic piechart
+
+```{r}
+ggplot(language_twitch, aes(x="", y=count, fill=language)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  # scale_color_viridis() +
+  # scale_fill_viridis() +
+  
+  theme_void() # remove background, grid, numeric labels
+
+```
+
 ```{r}
 print(colnames(twitch))
 ```
 
+## Subquestion Three
+
 ### Linear Regression Model
 
 ```{r}
-# model <- lm(follower_gain_count ~ view_gain_count + language + stream_time_mins, data=twitch)
-q3_lm_model_01 <- lm(log(follower_gain_count) ~ view_gain_count + stream_time_mins + language + stream_time_mins, data=twitch)
-# q3_lm_model_01 <- lm(log(follower_gain_count) ~ view_gain_count * language + stream_time_mins, data=twitch)
+q3_lm_model_01 <- lm(log(follower_gain_count) ~ view_gain_count + language + stream_time_mins, data=twitch)
 print(q3_lm_model_01)
 ```
 
@@ -97,9 +110,32 @@ q3_resid_df_01 <- data.frame(
 
 ggplot(q3_resid_df_01, aes(x=Fitted, y=Residuals)) +
   geom_point() +
-  scale_color_viridis_d() +
   geom_smooth(method="lm", se=FALSE, color="blue") +
   labs(x="Fitted Values", y="Residuals", title="Residual vs. Fitted Plot") +
   theme_minimal()
 ```
 Under this model the significant predictors are view_gain_count stream_time_mins
+
+### Subquestion Four
+
+```{r}
+str(twitch)
+```
+
+
+```{r}
+# # Example data preparation
+# twitch$StreamTimeBin <- cut(twitch$stream_time_mins, breaks=quantile(twitch$stream_time_mins), include.lowest=TRUE)
+# twitch$WatchTimeBin <- cut(twitch$watch_time_mins, breaks=quantile(twitch$watch_time_mins), include.lowest=TRUE)
+# 
+# # Create the heatmap
+# plot_ly(twitch, x = ~StreamTimeBin, y = ~WatchTimeBin, type = 'heatmap', colors = 'Blues', showscale = TRUE)
+
+p <- ggplot(twitch, aes(x=peak_view_count,y=avg_view_count)) + 
+  geom_bin2d() +
+  scale_color_viridis() +
+  scale_fill_viridis()
+
+ggplotly(p)
+```
+
