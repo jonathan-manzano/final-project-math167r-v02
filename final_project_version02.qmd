@@ -1,11 +1,124 @@
 ---
-title: "final_project_version02"
+title: "Final Project Version 2.0"
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+## Libraries
 
 ```{r}
-1 + 1
+#| echo: false
+#| output: false
+#| warning: false
+
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(caret)
+
+
+# The palette with grey:
+cbPalette <- c("#999999",
+               "#E69F00",
+               "#56B4E9",
+               "#009E73",
+               "#F0E442",
+               "#0072B2",
+               "#D55E00",
+               "#CC79A7")
+
+# The palette with black:
+cbbPalette <- c("#000000",
+                "#E69F00",
+                "#56B4E9",
+                "#009E73",
+                "#F0E442",
+                "#0072B2",
+                "#D55E00",
+                "#CC79A7")
+
+# To use for fills, add
+# scale_fill_manual(values=cbPalette)
+
+# To use for line and point colors, add
+# scale_colour_manual(values=cbPalette)
 ```
+
+## Dataset
+
+```{r}
+twitch <- read.csv("D:/rstudio/final_project_version02/twitch.csv")
+twitch <- twitch |>
+  rename(
+    channel = Channel,
+    watch_time_mins = Watch.time.Minutes.,
+    stream_time_mins = Stream.time.minutes.,
+    peak_view_count = Peak.viewers,
+    avg_view_count = Average.viewers,
+    follower_count = Followers,
+    follower_gain_count = Followers.gained,
+    view_gain_count = Views.gained,
+    partnered = Partnered,
+    mature = Mature,
+    language = Language
+  )
+```
+
+```{r}
+head(twitch)
+```
+
+```{r}
+str(twitch)
+```
+
+## Subquestion One
+
+Are the means of watch time significantly different between Twitch streamers who have mature content versus those who do not?
+
+```{r}
+
+G_twitch_streamers <- twitch |>
+  filter(`mature` == "False")
+
+R18_twitch_streamers <- twitch |>
+  filter(`mature` == "True")
+
+t.test(G_twitch_streamers$watch_time_mins, R18_twitch_streamers$watch_time_mins)
+```
+
+## Language Count
+
+```{r}
+language_twitch <- twitch %>%
+  group_by(language) %>%   # Group the data by the language column
+  summarise(count = n())
+
+language_twitch
+```
+
+```{r}
+print(colnames(twitch))
+```
+
+
+# ```{r}
+# # Setting up dummy variables
+# twitch_frame <- data.frame(twitch)
+# 
+# dummies <- dummyVars(~ language, data = twitch)
+# 
+# # Creating the model matrix
+# transformed_twitch <- predict(dummies, newdata = twitch)
+# 
+# # Converting to a data frame
+# transformed_data <- data.frame(transformed_twitch)
+# 
+# print(transformed_data)
+```
+
+Watch time(Minutes),Stream time(minutes),Peak viewers,Average viewers,Followers,Followers gained,Views gained,Partnered,Mature,Language
+
+```{r}
+model <- lm(`Followers gained`~`Views gained`+`Language`+`Stream time(minutes)`, data=twitch)
+<!-- lm(twitch$`follower_gain_count` ~ twitch$`view_gain_count` + twitch$`language` + twitch$`stream_time_mins`) -->
+```
+
