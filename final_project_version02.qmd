@@ -146,7 +146,17 @@ corrplot(cor_matrix, method = "color", type = "full", order = "hclust",
 ## Subquestion 5
 
 ```{r}
-lm(log(twitch$follower_gain_count)~log(twitch$follower_count))
-plot(x = log(twitch$follower_count), y = log(twitch$follower_gain_count))
-abline(lm(log(twitch$follower_gain_count)~log(twitch$follower_count)))
+ggplot(twitch, aes(x=follower_count, y=follower_gain_count)) +            
+  geom_point() +
+  stat_smooth(method="lm", 
+              formula=y ~ x, 
+              geom="smooth") 
+```
+
+```{r}
+ggplot(twitch, aes(x=log(follower_count), y=log(follower_gain_count))) +            
+  geom_point() + 
+  stat_smooth(method="lm", 
+              formula=y ~ x, 
+              geom="smooth")
 ```
