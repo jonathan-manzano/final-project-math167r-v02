@@ -13,7 +13,7 @@ library(tidyverse)
 library(ggplot2)
 library(dplyr)
 library(viridis)
-library(plotly)
+library(corrplot)
 ```
 
 ## Dataset
@@ -124,18 +124,23 @@ str(twitch)
 
 
 ```{r}
-# # Example data preparation
-# twitch$StreamTimeBin <- cut(twitch$stream_time_mins, breaks=quantile(twitch$stream_time_mins), include.lowest=TRUE)
-# twitch$WatchTimeBin <- cut(twitch$watch_time_mins, breaks=quantile(twitch$watch_time_mins), include.lowest=TRUE)
-# 
-# # Create the heatmap
-# plot_ly(twitch, x = ~StreamTimeBin, y = ~WatchTimeBin, type = 'heatmap', colors = 'Blues', showscale = TRUE)
+# Select only numerical columns for correlation matrix
+numerical_data <- twitch[, c('watch_time_mins', 'stream_time_mins', 'peak_view_count', 
+                           'avg_view_count', 'follower_count', 'follower_gain_count', 'view_gain_count')]
 
-p <- ggplot(twitch, aes(x=peak_view_count,y=avg_view_count)) + 
-  geom_bin2d() +
-  scale_color_viridis() +
-  scale_fill_viridis()
+# Calculate the correlation matrix
+cor_matrix <- cor(numerical_data, use = "complete.obs")  # Using 'complete.obs' to handle missing values
 
-ggplotly(p)
+# Plot the correlation matrix with correlation coefficients
+corrplot(cor_matrix, method = "color", type = "full", order = "hclust",
+         tl.col = "black", tl.srt = 45,  # Text label color and rotation
+         tl.pos = "lt",
+         diag = FALSE,  # Do not show the diagonal
+         addCoef.col = "black",  # Color for the correlation coefficients
+         number.cex = 0.8,  # Size of the numbers
+         cl.cex = 0.8,  # Size of the color legend text
+         addCoefasPercent = FALSE,  # Display coefficients as decimal values
+         number.digits = 2)  # Number of significant digits
 ```
 
+## Subquestion 5
