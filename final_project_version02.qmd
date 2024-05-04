@@ -144,3 +144,9 @@ corrplot(cor_matrix, method = "color", type = "full", order = "hclust",
 ```
 
 ## Subquestion 5
+
+```{r}
+lm(log(twitch$follower_gain_count)~log(twitch$follower_count))
+plot(x = log(twitch$follower_count), y = log(twitch$follower_gain_count))
+abline(lm(log(twitch$follower_gain_count)~log(twitch$follower_count)))
+```
